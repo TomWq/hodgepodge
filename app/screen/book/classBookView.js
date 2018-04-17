@@ -33,7 +33,6 @@ class ClassBookView extends React.Component{
         return(
             <View style={style.container1}>
 
-
                 <FlatList
                     ref='scrollView'
                     data={leftArray}
@@ -108,6 +107,7 @@ class ClassBookView extends React.Component{
 
     itemChange(info){
 
+        console.log(info)
         let section = info.viewableItems[0].section.key;
 
         if (section){

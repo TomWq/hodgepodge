@@ -5,7 +5,6 @@
 import {observable,action,runInAction,toJS} from 'mobx';
 import {BaseApi,BookApi} from "../assest";
 import {HTTPUtil} from "../utils/httpUtil1";
-import {realm} from '../assest/realm';
 class bookClassListStore{
 
     @observable data=[];
@@ -62,22 +61,27 @@ class bookClassListStore{
 
     @observable chapter = '';
 
-    @action fetchData=async(gender:string,type:string,major,minor:string)=> {
+    @action fetchData=(gender:string,type:string,major,minor:string)=> {
 
         this.loading = true;
-
+        this.data = [];
         let url = BaseApi.BookBase1 + BookApi.categories;
         let params = {
             gender: gender, type: type, major: major, minor: minor, start: this.number, limit: 20
         };
-        const data = await HTTPUtil.get(url, params);
 
-        runInAction(()=>{
+        HTTPUtil.get(url, params).then((data)=>{
             this.loading = false;
             this.data = data.books;
             this.total = data.total;
+            RealmBook.removeAllData('BookData');
+            RealmBook.create('BookData',data.books);
+        }).catch((e)=>{
+            console.log(e);
+            let localData = RealmBook.loadAll('BookData');
+            this.data = localData;
+            this.loading = false;
         })
-
     };
 
     //判断数据是否过时
@@ -115,18 +119,13 @@ class bookClassListStore{
     @action fetchClassSmall=async(gender,major)=>{
 
         let url = BaseApi.BookBase1+BookApi.lv2;
-
         this.classSmallData = [];
-
-        try{
-            const data = await HTTPUtil.get(url);
-            runInAction(()=>{
-              this.dealArray(data,gender,major);
-              //console.log(this.classSmallData.slice(0))
-            })
-        }catch (e){
-            console.log(e)
-        }
+        HTTPUtil.get(url).then((data)=>{
+            this.dealArray(data,gender,major);
+        }).catch((e)=>{
+            console.log(e);
+            this.classSmallData = RealmBook.loadAll('BookTopData')
+        });
 
     };
 
@@ -248,12 +247,11 @@ class bookClassListStore{
 
     @action chapterFetch=async(link)=>{
 
-        console.log(link)
         let chapter_url = BaseApi.BookBase3 +link;
         const chapter = await HTTPUtil.get(chapter_url);
         runInAction(()=>{
             this.chapter = chapter.chapter.cpContent;
-
+            console.log(chapter.chapter.cpContent)
         })
 
     };
@@ -262,14 +260,15 @@ class bookClassListStore{
 
         let data = [];
         let data1 = [];
-        //let data2 = [];
+        let data2 = [];
+
+        RealmBook.removeAllData('BookTopData');
 
         for (let i in obj){
             if (i !=='ok'){
                 data.push(obj[i])
             }
         }
-
         'male,female,picture,press'.split(',').forEach((typeTitle,i)=>{
             let obj = {key:typeTitle,data:[]};
             data.forEach((itemType,index)=>{
@@ -285,8 +284,13 @@ class bookClassListStore{
                 item.data.forEach((item1, i)=>{
                     item1.forEach((item2,i)=>{
                         if(item2.major === major){
-                            if ( item2.mins.length !==0){
-                                this.classSmallData = item2.mins;
+                            if (item2.mins.length !==0){
+                                item2.mins.forEach((item3,i)=>{
+                                    let obj1 = {title:item3}
+                                    data2.push(obj1)
+                                });
+                                this.classSmallData = data2;
+                                RealmBook.createTopView('BookTopData',item2.mins);
                                 this.isClassType = true;
                             }else {
                                 this.isClassType = false;
@@ -296,7 +300,7 @@ class bookClassListStore{
                 })
             }
         })
-    }
+    };
 
 
     @action assignment=(array)=>{

@@ -18,6 +18,11 @@ class ClassBook extends React.Component{
     render(){
 
         let sections = toJS(BookClassStore.data);
+
+        sections.forEach((item,i)=>{
+            console.log(item)
+        })
+
         const {navigate} = this.props.navigation;
 
         if (sections){

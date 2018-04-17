@@ -8,7 +8,6 @@ import {BaseApi} from "../../assest/api";
 import {ImageView} from "../home/defaultView";
 import * as Animatable from 'react-native-animatable';
 import {ListItem} from 'react-native-ui-lib';
-import {realm} from '../../assest/realm';
 let array = [{},{},{},{},{},{}];
 
 @observer
@@ -22,12 +21,9 @@ class ClassBookListView extends React.Component{
       }
 
 
-    componentDidMount() {
-
-    }
-
     render(){
 
+       console.log(BookClassListStore.data.slice(0))
 
         if (BookClassListStore.loading){
             return (
@@ -59,72 +55,18 @@ class ClassBookListView extends React.Component{
 
     _keyExtractor=(item,i)=>i+'';
 
-    //获取本地数据
-    fetchLocalData=()=>{
-        return new Promise((resolve,reject)=>{
-            let bookList = this.book;
-            if (bookList){
-                try{
-                    resolve(JSON.parse(bookList));
-                }catch (e){
-                    reject(e)
-                }
-            }else {
-
-            }
-        })
-    };
-
-    _renderItem=({item,index})=>{
+    _renderItem=({item})=>{
 
         let bookTitle = item.title;
         let shortIntro = item.shortIntro;
         let cover = BaseApi.BookBase4 + item.cover;
         let retentionRatio = item.retentionRatio;
-        let latelyFollower;
         let _id = item._id;
         if (item.latelyFollower-10000>0){
-            latelyFollower = (item.latelyFollower/10000).toFixed(1);
+          this.latelyFollower = (item.latelyFollower/10000).toFixed(1);
         }else {
-            latelyFollower =item.latelyFollower;
+          this.latelyFollower =item.latelyFollower;
         }
-
-
-        /**
-         *
-
-        if (this.book && this.book.length===0){
-            realm.write(()=>{
-                realm.create('Book',{
-                    id:_id,
-                    bookTitle:bookTitle,
-                    bookContext:shortIntro,
-                    retentionRatio:retentionRatio,
-                    latelyFollower:parseInt(latelyFollower),
-                })
-            });
-        }else if (this.book.length>0){
-            this.book.forEach((item, i)=>{
-                if (item.id !==_id){
-                    try{
-                        realm.write(()=>{
-                            realm.create('Book',{
-                                id:_id,
-                                bookTitle:bookTitle,
-                                bookContext:shortIntro,
-                                retentionRatio:retentionRatio,
-                                latelyFollower:parseInt(latelyFollower),
-                            })
-                        });
-                    }catch (e){
-                        console.log(e)
-                    }
-                }else {
-                    console.log('没有进行写入操作')
-                }
-            });
-        }
-         */
 
         return(
             <TouchableOpacity
@@ -137,7 +79,7 @@ class ClassBookListView extends React.Component{
                     <Text numberOfLines={2} style={style.BookViewContext}>{shortIntro}</Text>
                     <View style={{flexDirection:'row'}}>
                         <View style={{marginRight:20,flexDirection:'row'}}>
-                            <Text style={style.latelyFollower}>{latelyFollower}</Text>
+                            <Text style={style.latelyFollower}>{this.latelyFollower}</Text>
                             {(item.latelyFollower-10000>0)?
                                 <Text style={style.latelyFollower}>万</Text>:null}
                             <Text style={style.retentionRatio}>人气</Text>
