@@ -12,16 +12,14 @@ class bookClassStore {
 
         let url = BaseApi.BookBase1 + BookApi.statistics;
 
-        try{
-            const data = await HTTPUtil.get(url);
-            runInAction(()=>{
-                 this.loading = false;
-                 this.data  = dealArray(data).slice(0);
-            })
-        }catch (err){
-            console.log(err)
-        }
-
+        HTTPUtil.get(url).then((data)=>{
+            this.loading = false;
+            this.data = dealArray(data).slice(0);
+        }).catch((error)=>{
+            console.log(error);
+           // this.loading = false;
+           // this.data = RealmBook.loadAll('BookClass')
+        });
     }
 
 }
@@ -38,7 +36,6 @@ function dealArray(array) {
         if (i!=='ok'){data.push(array[i])}
 
     }
-    //console.log(array);
 
     '男生,女生,漫画,出版'.split(',').forEach((typeTitle,index)=>{
         let obj = {key:typeTitle,data:[]};
@@ -51,15 +48,13 @@ function dealArray(array) {
                         }
                     });
                 });
-
                 obj.data.push(item1)
             }
         });
         data1.push(obj);
-
-
     });
-
+    //RealmBook.removeAllData('BookClass');
+    //RealmBook.createClassView('BookClass',data1);
     return data1;
 
 }

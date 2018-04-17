@@ -747,6 +747,13 @@ const style = StyleSheet.create({
         backgroundColor:'red',
         justifyContent:'center',
         alignItems:'center'
+    },
+    bookReaderView:{
+        flex:1,
+        backgroundColor:'red'
+    },
+    bookReaderViewItem:{
+
     }
 
 });

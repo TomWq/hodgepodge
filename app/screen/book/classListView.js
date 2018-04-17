@@ -40,12 +40,13 @@ class ClassListView extends React.Component{
         }
     }
 
-
     fetchData=(gender,type,major,minor,start)=>{
         BookClassListStore.fetchData(gender,type,major,minor,start);
     };
 
     render(){
+
+
 
         return(
             <View style={{flex:1}}>

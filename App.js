@@ -2,8 +2,9 @@
  * @flow
  */
 import React, { Component } from "react";
-import {Global} from './app/assest';
+import {Global,Book} from './app/assest';
 import {Navigator} from "./app/navigation/navigator";
+
 
 class App extends Component <any,any> {
 

@@ -25,9 +25,11 @@ class ClassListViewTopView extends React.Component{
 
     render(){
 
+        // this.props.classType.map((item,i)=>{
+        //     console.log(item.title)
+        // });
+
         return(
-
-
 
             <View style={[style.classListViewTopView,
                 {height:this.props.isClassType?scaleSize(140):scaleSize(90)}]}>
@@ -56,7 +58,7 @@ class ClassListViewTopView extends React.Component{
                                 onPress={()=>this.onPress1(i,item)}
                                 activeOpacity={0.9}
                                 style={[style.leftTypeView,{width:WIDTH/5,backgroundColor:this.state.index1===i?'red':null}]}>
-                                <Text style={[style.drop_down_title,{color:this.state.index1===i?'#fff':'#666666'}]}>{item}</Text>
+                                <Text style={[style.drop_down_title,{color:this.state.index1===i?'#fff':'#666666'}]}>{item.title}</Text>
                             </TouchableOpacity>
                         )
                     })}
@@ -72,7 +74,7 @@ class ClassListViewTopView extends React.Component{
 
     onPress1(index1,item){
         this.setState({index1})
-        this.props.onChooseClass(item)
+        this.props.onChooseClass(item.title)
     }
 
 }

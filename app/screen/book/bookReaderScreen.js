@@ -2,6 +2,7 @@ import React from 'react';
 import {View,ScrollView,Text,FlatList,TouchableOpacity} from 'react-native';
 import {observer} from 'mobx-react';
 import {BookClassListStore} from "../../store/bookClassListStore";
+import {style} from "./style";
 
 @observer
 class BookReaderScreen extends React.Component{
@@ -15,25 +16,25 @@ class BookReaderScreen extends React.Component{
     componentDidMount() {
 
         const chapter_data =  BookClassListStore.chapter_data.slice(0);
-        let link = chapter_data[1].link;
+        let link = chapter_data[2].link;
+
         BookClassListStore.chapterFetch(link);
+
 
     }
 
 
      dealArray=(context)=>{
 
+
          let array = [];
-
           if (context.length>0){
-             let number =  Math.ceil(context.length/500);
+             let number =  Math.ceil(context.length/300);
               console.log(number);
-
               for (let i=0;i<number;i++){
-                  let data = context.slice(i*500,500*(i+1));
+                  let data = context.slice(i*300,300*(i+1));
                   array.push(data)
               }
-
               console.log(array)
 
           }
@@ -45,38 +46,11 @@ class BookReaderScreen extends React.Component{
 
      };
 
-     contentFormat = (content) => {
-        let fontCount = parseInt(WIDTH/ 18 - 1);
-        let fontLines = parseInt((HEIGHT - 100) / 34)
-        const length = content.length
-        let array = []
-        let x = 0, y, m = 0
-        while (x < length) {
-            let _array = []
-            for (let i = 0; i <= fontLines; i++) {
-                let str = content.substring(x, x + fontCount)
-                if (str.indexOf('@') !== -1) {
-                    y = x + str.indexOf('@') + 1;
-                    _array[i] = content.substring(x, y).replace('@', '')
-                    x = y
-                    continue
-                } else {
-                    y = x + fontCount;
-                    _array[i] = content.substring(x, y)
-                    x = y
-                    continue
-                }
-            }
-            array[m] = _array
-            m++
-        }
-        return array
-    }
-
     render(){
 
-        let _content = '\u3000\u3000' + BookClassListStore.chapter.replace(/\n/g, '@\u3000\u3000');
-        let data = this.contentFormat(_content)
+        let _content = '\u3000\u3000' + BookClassListStore.chapter;
+        let data = this.dealArray(_content);
+
 
         //let data =  this.contentFormat(BookClassListStore.chapter);
 
@@ -85,13 +59,17 @@ class BookReaderScreen extends React.Component{
            <View style={{flex:1}}>
 
                <ScrollView
+                   style={style.bookReaderView}
                    ref='scrollView'
                    scrollEventThrottle={800}
                    horizontal={true}
+                   contentContainerStyle={{justifyContent:'center',alignItems:'center'}}
                    showsHorizontalScrollIndicator={false}
                    showsVerticalScrollIndicator={false}
                    pagingEnabled={true} >
                    <FlatList
+                       style={style.bookReaderView}
+                       contentContainerStyle={style.bookReaderViewItem}
                        data ={data}
                        renderItem={this.renderItem}
                        pagingEnabled={true}
@@ -114,14 +92,13 @@ class BookReaderScreen extends React.Component{
               return(
                   <View style={{flexDirection: 'row'}}>
                       <TouchableOpacity
-                          style={{height: HEIGHT, width: WIDTH}}
+                          style={{height: HEIGHT, width: WIDTH,padding:20}}
                           activeOpacity={1}>
                           <View
-                              style={{flex: 1, justifyContent: 'space-between'}}>
+                              style={{flex: 1}}>
                               <View style={{alignSelf: 'center', flex: 1}}>
                                   <Text style={{ color: '#604733',
-                                      fontSize: 18,
-                                      lineHeight:34,}}>
+                                      fontSize: 18,lineHeight:30}}>
                                       {item}
                                   </Text>
                               </View>
